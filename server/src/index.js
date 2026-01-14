@@ -4,17 +4,29 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import OpenAI from 'openai';
+import { config } from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-const PORT = process.env.PORT || 4000;
+// 루트 디렉토리의 .env 파일 로드
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+config({ path: join(__dirname, '../../.env') });
+
+const PORT = process.env.NODE_PORT || process.env.PORT || 4000;
 const openaiApiKey = process.env.OPENAI_API_KEY;
 
 if (!openaiApiKey) {
-  console.warn('⚠️  OPENAI_API_KEY가 설정되지 않았습니다. 요청 시 오류가 발생합니다.');
+  console.warn('[경고] OPENAI_API_KEY가 설정되지 않았습니다. 요청 시 오류가 발생합니다.');
 }
 
 const openai = new OpenAI({ apiKey: openaiApiKey });
 const systemPrompt =
   '너는 친절한 한국어 AI 어시스턴트야. 답변은 간결하고 실용적으로 작성하고, 필요한 경우 bullet을 사용해. 사용자가 명확히 요청하지 않는 이상 영어를 사용하지 마.';
+
+// RAG 서버 설정
+const RAG_SERVER_URL = process.env.RAG_SERVER_URL || 'http://localhost:8000';
+const USE_RAG = process.env.USE_RAG === 'true'; // RAG 사용 여부
 
 const app = express();
 app.use(cors());
@@ -53,13 +65,42 @@ io.on('connection', (socket) => {
     conversationStore.set(socket.id, history);
 
     try {
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: history.map(({ role, content }) => ({ role, content })),
-        temperature: 0.2
-      });
+      let responseContent;
 
-      const responseContent = completion.choices[0]?.message?.content ?? '죄송해요, 지금은 답변할 수 없어요.';
+      // RAG 사용 여부에 따라 분기
+      if (USE_RAG) {
+        console.log('[RAG] RAG 서버로 질의 전송:', message.content);
+        
+        // RAG 서버에 질의
+        const ragResponse = await fetch(`${RAG_SERVER_URL}/query`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: message.content })
+        });
+
+        if (!ragResponse.ok) {
+          throw new Error(`RAG 서버 오류: ${ragResponse.status}`);
+        }
+
+        const ragResult = await ragResponse.json();
+        responseContent = ragResult.answer;
+
+        // 출처 정보가 있으면 추가
+        if (ragResult.sources && ragResult.sources.length > 0) {
+          const sourceNames = ragResult.sources.map(s => s.file).join(', ');
+          responseContent += `\n\n[출처] 참고 문서: ${sourceNames}`;
+        }
+      } else {
+        // 기존 방식: OpenAI 직접 호출
+        const completion = await openai.chat.completions.create({
+          model: 'gpt-4o-mini',
+          messages: history.map(({ role, content }) => ({ role, content })),
+          temperature: 0.2
+        });
+
+        responseContent = completion.choices[0]?.message?.content ?? '죄송해요, 지금은 답변할 수 없어요.';
+      }
+
       const assistantMessage = {
         role: 'assistant',
         content: responseContent,
@@ -69,9 +110,9 @@ io.on('connection', (socket) => {
       conversationStore.set(socket.id, [...history, assistantMessage]);
       socket.emit('assistantMessage', assistantMessage);
     } catch (error) {
-      console.error('OpenAI error:', error);
+      console.error('AI 처리 오류:', error);
       socket.emit('serverError', {
-        message: error?.response?.data?.error?.message || 'AI 호출 중 오류가 발생했어요.'
+        message: error?.message || 'AI 호출 중 오류가 발생했어요.'
       });
     }
   });
@@ -82,6 +123,6 @@ io.on('connection', (socket) => {
 });
 
 httpServer.listen(PORT, () => {
-  console.log(`🚀 서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
+  console.log(`[서버] 서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
 });
 

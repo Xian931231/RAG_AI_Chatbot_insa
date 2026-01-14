@@ -1,0 +1,25 @@
+# Core RAG libraries
+langchain==0.3.18
+langchain-community==0.3.18
+langchain-openai==0.2.14
+chromadb==0.5.23
+sentence-transformers==3.3.1
+
+# Vector & Embeddings
+huggingface_hub==0.27.0
+transformers==4.47.1
+
+# Document loaders
+pypdf==5.1.0
+python-docx==1.1.2
+openpyxl==3.1.5
+python-multipart==0.0.18
+
+# Web server
+fastapi==0.115.6
+uvicorn==0.34.0
+pydantic==2.10.5
+
+# Utilities
+python-dotenv==1.0.1
+openai==1.59.5

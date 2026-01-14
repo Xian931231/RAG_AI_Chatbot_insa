@@ -1,2 +1,5 @@
 .github/copilot-instructions.md
+.env
 server/.env
+rag-server/.env
+rag-server/chroma_db/
