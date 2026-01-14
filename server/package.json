@@ -1,0 +1,17 @@
+{
+  "name": "chat-react-server",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.19.2",
+    "openai": "^4.73.0",
+    "socket.io": "^4.7.5"
+  }
+}
+

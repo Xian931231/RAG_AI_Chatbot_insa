@@ -1,0 +1,119 @@
+:root {
+  font-family: 'Pretendard', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #0b1221;
+  color: #f4f4f5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body,
+#root {
+  margin: 0;
+  min-height: 100vh;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 1.5rem;
+  gap: 1rem;
+  background: radial-gradient(circle at top, #1d2b53, #090e1a);
+}
+
+.app__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: #1e293b;
+  font-size: 0.875rem;
+}
+
+.chat-window {
+  flex: 1;
+  background: rgba(6, 11, 23, 0.9);
+  border-radius: 1rem;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.bubble {
+  max-width: 75%;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  background: #1e293b;
+  box-shadow: 0 10px 25px rgba(2, 6, 23, 0.4);
+}
+
+.bubble.user {
+  margin-left: auto;
+  background: linear-gradient(125deg, #6366f1, #8b5cf6);
+}
+
+.bubble.assistant {
+  margin-right: auto;
+  background: #0f172a;
+}
+
+.bubble.system {
+  margin: 0 auto;
+  background: #b91c1c;
+  color: white;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.input-bar {
+  display: flex;
+  gap: 0.75rem;
+  background: #0f172a;
+  padding: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.input-bar input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #f8fafc;
+  font-size: 1rem;
+}
+
+.input-bar input:focus {
+  outline: none;
+}
+
+.input-bar button {
+  background: linear-gradient(125deg, #38bdf8, #6366f1);
+  border: none;
+  border-radius: 999px;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.input-bar button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
