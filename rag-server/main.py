@@ -29,8 +29,13 @@ app.add_middleware(
 rag_service: Optional[RAGService] = None
 
 # Request/Response 모델
+class Message(BaseModel):
+    role: str
+    content: str
+
 class QueryRequest(BaseModel):
     question: str
+    history: Optional[List[Message]] = []
     top_k: Optional[int] = None
 
 class QueryResponse(BaseModel):
@@ -84,9 +89,18 @@ async def query(request: QueryRequest):
         raise HTTPException(status_code=400, detail="질문이 비어있습니다.")
     
     try:
-        result = rag_service.query(request.question)
+        # history를 dict 리스트로 변환
+        history_list = [msg.model_dump() for msg in request.history] if request.history else []
+        result = rag_service.query(request.question, history=history_list)
         return result
     except Exception as e:
+        print(f"\n[오류] RAG 처리 중 예외 발생:")
+        print(f"   질문: {request.question}")
+        print(f"   히스토리: {len(request.history) if request.history else 0}개")
+        print(f"   오류 타입: {type(e).__name__}")
+        print(f"   오류 메시지: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"RAG 처리 중 오류: {str(e)}")
 
 @app.post("/ingest")

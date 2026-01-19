@@ -71,15 +71,25 @@ io.on('connection', (socket) => {
       if (USE_RAG) {
         console.log('[RAG] RAG 서버로 질의 전송:', message.content);
         
+        // 대화 히스토리를 RAG 서버로 전달 (시스템 프롬프트 제외)
+        const conversationHistory = history
+          .filter(msg => msg.role !== 'system')
+          .map(msg => ({ role: msg.role, content: msg.content }));
+        
         // RAG 서버에 질의
         const ragResponse = await fetch(`${RAG_SERVER_URL}/query`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question: message.content })
+          body: JSON.stringify({ 
+            question: message.content,
+            history: conversationHistory
+          })
         });
 
         if (!ragResponse.ok) {
-          throw new Error(`RAG 서버 오류: ${ragResponse.status}`);
+          const errorText = await ragResponse.text();
+          console.error(`[오류] RAG 서버 응답: ${ragResponse.status}`, errorText);
+          throw new Error(`RAG 서버 오류: ${ragResponse.status} - ${errorText}`);
         }
 
         const ragResult = await ragResponse.json();

@@ -25,7 +25,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="app__header">
-        <h1>로컬 ChatGPT 멀티턴 데모</h1>
+        <h1>DliveInsaBot - 인사 규정 챗봇</h1>
         <span className="status">{status}</span>
       </header>
 
@@ -33,7 +33,7 @@ export default function App() {
         {messages.map((message, idx) => (
           <article key={`${message.timestamp || idx}-${message.role}`} className={`bubble ${message.role}`}>
             <div className="meta">
-              <strong>{message.role === 'user' ? '나' : 'ChatGPT'}</strong>
+              <strong>{message.role === 'user' ? '나' : '딜라이브_인사봇'}</strong>
               <time>{formatTime(message.timestamp)}</time>
             </div>
             <p>{message.content}</p>

@@ -24,7 +24,7 @@ class Config:
     CHUNK_OVERLAP = 50
     
     # 검색 설정
-    TOP_K_RESULTS = 3
+    TOP_K_RESULTS = 5  # 3 → 5로 증가
     
     # 서버 설정
     PORT = int(os.getenv("RAG_PORT", os.getenv("PORT", 8000)))
