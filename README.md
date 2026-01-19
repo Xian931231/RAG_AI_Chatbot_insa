@@ -5,14 +5,14 @@ React + Socket.io + FastAPI + OpenAI GPT-4o-mini를 이용한 실시간 RAG 채�
 
 ## 주요 기능
 
-✨ **핵심 기능**
-- 🤖 실시간 AI 챗봇 (GPT-4o-mini)
-- 📚 RAG 기반 문서 검색 및 답변 생성
-- 💬 **멀티턴 대화 지원** - 이전 대화 맥락 이해
-- 🔍 **하이브리드 검색** - 임베딩 + 키워드 매칭
-- 🇰🇷 한국어 최적화 (임베딩: jhgan/ko-sroberta-multitask)
-- 📄 다양한 문서 형식 지원 (PDF, DOCX, TXT, Excel)
-- 📌 답변 출처 문서 표시
+**핵심 기능**
+- 실시간 AI 챗봇 (GPT-4o-mini)
+- RAG 기반 문서 검색 및 답변 생성
+- **멀티턴 대화 지원** - 이전 대화 맥락 이해
+- **하이브리드 검색** - 임베딩 + 키워드 매칭
+- 한국어 최적화 (임베딩: jhgan/ko-sroberta-multitask)
+- 다양한 문서 형식 지원 (PDF, DOCX, TXT, Excel)
+- 답변 출처 문서 표시
 
 ## 시스템 아키텍처
 
@@ -241,19 +241,6 @@ RAG_PORT=8001
 ### 프롬프트 수정
 `rag-server/src/rag_service.py`의 `PROMPT_TEMPLATE` 또는 `generate_answer()` 메서드 수정
 
-## 라이선스
-
-MIT License
-
-## 기여
-
-이슈나 PR은 언제나 환영합니다!
-
----
-
-**Made with ❤️ for Dlive INSA Team**
-EMBEDDING_MODEL = "jhgan/ko-sroberta-multitask"  # 한국어 임베딩
-```
 
 ## 멀티턴 대화 처리 방식
 
